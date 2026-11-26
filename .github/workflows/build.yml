@@ -1,0 +1,22 @@
+name: Build Maya APK
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install deps
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev libltdl-dev
+        pip3 install --break-system-packages --upgrade buildozer Cython==0.29.33
+    - name: Build APK
+      run: |
+        yes | buildozer android debug
+    - uses: actions/upload-artifact@v4
+      with:
+        name: maya-apk
+        path: ./bin/*.apk
